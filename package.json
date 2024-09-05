@@ -12,6 +12,7 @@
   "author": "Sourav Garai",
   "license": "ISC",
   "dependencies": {
+    "cli-color": "^2.0.4",
     "inquirer": "^10.2.0",
     "ncp": "^2.0.0"
   }

@@ -3,7 +3,7 @@
 const fs = require("fs").promises;
 const { existsSync } = require("fs");
 const path = require("path");
-const cls = require("cls"); // Use cls for color formatting
+const cls = require("cli-color"); // Use cls for color formatting
 const inquirer = require("inquirer");
 
 inquirer
