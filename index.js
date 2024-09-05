@@ -14,15 +14,30 @@ const path = require("path");
 				type: "input",
 				name: "projectName",
 				message: "Enter project name:",
-				default: "./",
+				default: ".", // Default to current directory
 			},
 		])
 		.then(async (answers) => {
-			const projectName = answers.projectName;
-			const projectDir = projectName === "./" ? "." : projectName;
+			let projectName = answers.projectName;
+			let projectDir = projectName;
+
+			// If project name is empty
+			if (!projectName) {
+				throw new Error("Project name is required!");
+			}
+			// If project name is ".", use current directory name
+			if (projectName === ".") {
+				projectName = path.basename(process.cwd()); // Use current directory name
+				projectDir = "."; // Set to current directory
+			}
+
+			// If project name is not provided, throw an error
+			if (!projectName) {
+				throw new Error("Project name is required!");
+			}
 
 			// Create the project directory if it doesn't exist
-			if (!existsSync(projectDir)) {
+			if (projectDir !== "." && !existsSync(projectDir)) {
 				await fs.mkdir(projectDir);
 			}
 
@@ -31,8 +46,25 @@ const path = require("path");
 			try {
 				await copyDirectory(sourceDir, projectDir);
 				console.log(
-					chalk.green(`Project created successfully in ${projectDir}`)
+					chalk.green(
+						`Project created successfully in ${projectDir}!`
+					)
 				);
+
+				// Instructions
+				console.log(chalk.green(`To setup the project, run:`));
+				if (projectDir === ".") {
+					console.log(chalk.green(`cd ${projectName}`));
+				}
+				console.log(chalk.green(`npm install`));
+				console.log(
+					chalk.green(
+						`CREATE .env file according to config/envConfig.js`
+					)
+				);
+				console.log(chalk.green(`\nRun your application with:`));
+				console.log(chalk.green(`npm start - for production`));
+				console.log(chalk.green(`npm run dev - for development`));
 
 				// Modify package.json and package-lock.json
 				await updatePackageFiles(projectDir, projectName);
