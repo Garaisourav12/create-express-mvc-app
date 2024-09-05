@@ -121,7 +121,8 @@ async function updatePackageFiles(projectDir, projectName) {
 				await fs.readFile(packageLockJsonPath, "utf8")
 			);
 			templatePackageLockJson.name = projectName;
-			templatePackageLockJson.packges[""].name = projectName;
+			console.log(templatePackageLockJson.packages);
+			templatePackageLockJson.packages[""].name = projectName;
 
 			await fs.writeFile(
 				packageLockJsonPath,
