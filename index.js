@@ -5,8 +5,8 @@ const { existsSync } = require("fs");
 const path = require("path");
 
 (async () => {
-	const chalk = (await import("chalk")).default;
-	const inquirer = (await import("inquirer")).default;
+	const chalk = (await import("chalk")).default; // Correctly import chalk
+	const inquirer = (await import("inquirer")).default; // Correctly import inquirer
 
 	inquirer
 		.prompt([
@@ -68,8 +68,8 @@ async function copyDirectory(source, destination) {
 // Function to update package files
 async function updatePackageFiles(projectDir, projectName) {
 	try {
-		const packageJsonPath = `${projectDir}/package.json`;
-		const packageLockJsonPath = `${projectDir}/package-lock.json`;
+		const packageJsonPath = path.join(projectDir, "package.json");
+		const packageLockJsonPath = path.join(projectDir, "package-lock.json");
 
 		// Check if the files exist before reading
 		if (existsSync(packageJsonPath)) {
