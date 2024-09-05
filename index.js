@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 
-const fs = require("fs");
-const ncp = require("ncp").ncp;
+const fs = require("fs").promises;
+const { existsSync } = require("fs");
+const path = require("path");
 
 (async () => {
-	const chalk = (await import("chalk")).default; // Dynamically import chalk
-	const inquirer = (await import("inquirer")).default; // Dynamically import inquirer
+	const chalk = (await import("chalk")).default;
+	const inquirer = (await import("inquirer")).default;
 
 	inquirer
 		.prompt([
@@ -16,73 +17,89 @@ const ncp = require("ncp").ncp;
 				default: "./",
 			},
 		])
-		.then((answers) => {
+		.then(async (answers) => {
 			const projectName = answers.projectName;
 			const projectDir = projectName === "./" ? "." : projectName;
 
 			// Create the project directory if it doesn't exist
-			if (!fs.existsSync(projectDir)) {
-				fs.mkdirSync(projectDir);
+			if (!existsSync(projectDir)) {
+				await fs.mkdir(projectDir);
 			}
 
-			// Copy the template files to the new project directory
-			ncp("create-express-app/.", projectDir, (err) => {
-				if (err) {
-					console.error(
-						chalk.red(`Error while copying files: ${err.message}`)
-					);
-					process.exit(1);
-				} else {
-					console.log(
-						chalk.green(
-							`Project created successfully in ${projectDir}`
-						)
-					);
+			const sourceDir = path.join(__dirname, "create-express-app");
 
-					try {
-						// Read and modify the template package.json
-						const packageJsonPath = `${projectDir}/package.json`;
-						const packageLockJsonPath = `${projectDir}/package-lock.json`;
+			try {
+				await copyDirectory(sourceDir, projectDir);
+				console.log(
+					chalk.green(`Project created successfully in ${projectDir}`)
+				);
 
-						// Check if the files exist before reading
-						if (fs.existsSync(packageJsonPath)) {
-							const templatePackageJson = JSON.parse(
-								fs.readFileSync(packageJsonPath, "utf8")
-							);
-							templatePackageJson.name = projectName;
-
-							fs.writeFileSync(
-								packageJsonPath,
-								JSON.stringify(templatePackageJson, null, 2)
-							);
-						}
-
-						if (fs.existsSync(packageLockJsonPath)) {
-							const templatePackageLockJson = JSON.parse(
-								fs.readFileSync(packageLockJsonPath, "utf8")
-							);
-							templatePackageLockJson.name = projectName;
-
-							fs.writeFileSync(
-								packageLockJsonPath,
-								JSON.stringify(templatePackageLockJson, null, 2)
-							);
-						}
-
-						console.log(
-							chalk.green("Package files updated successfully.")
-						);
-					} catch (err) {
-						console.error(
-							chalk.red(
-								`Error while updating package files: ${err.message}`
-							)
-						);
-					}
-				}
-			});
+				// Modify package.json and package-lock.json
+				await updatePackageFiles(projectDir, projectName);
+			} catch (err) {
+				console.error(
+					chalk.red(`Error while copying files: ${err.message}`)
+				);
+				process.exit(1);
+			}
 		})
 		.catch((err) => {
 			console.error(chalk.red(`Error during prompt: ${err.message}`));
 		});
 })();
+
+// Function to copy directory recursively
+async function copyDirectory(source, destination) {
+	const entries = await fs.readdir(source, { withFileTypes: true });
+
+	for (const entry of entries) {
+		const srcPath = path.join(source, entry.name);
+		const destPath = path.join(destination, entry.name);
+
+		if (entry.isDirectory()) {
+			await fs.mkdir(destPath, { recursive: true });
+			await copyDirectory(srcPath, destPath);
+		} else {
+			await fs.copyFile(srcPath, destPath);
+		}
+	}
+}
+
+// Function to update package files
+async function updatePackageFiles(projectDir, projectName) {
+	try {
+		const packageJsonPath = `${projectDir}/package.json`;
+		const packageLockJsonPath = `${projectDir}/package-lock.json`;
+
+		// Check if the files exist before reading
+		if (existsSync(packageJsonPath)) {
+			const templatePackageJson = JSON.parse(
+				await fs.readFile(packageJsonPath, "utf8")
+			);
+			templatePackageJson.name = projectName;
+
+			await fs.writeFile(
+				packageJsonPath,
+				JSON.stringify(templatePackageJson, null, 2)
+			);
+		}
+
+		if (existsSync(packageLockJsonPath)) {
+			const templatePackageLockJson = JSON.parse(
+				await fs.readFile(packageLockJsonPath, "utf8")
+			);
+			templatePackageLockJson.name = projectName;
+
+			await fs.writeFile(
+				packageLockJsonPath,
+				JSON.stringify(templatePackageLockJson, null, 2)
+			);
+		}
+
+		console.log(chalk.green("Package files updated successfully."));
+	} catch (err) {
+		console.error(
+			chalk.red(`Error while updating package files: ${err.message}`)
+		);
+	}
+}
