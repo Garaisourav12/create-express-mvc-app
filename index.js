@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-const inquirer = require("inquirer");
 const fs = require("fs");
 const ncp = require("ncp").ncp;
 
 (async () => {
 	const chalk = (await import("chalk")).default; // Dynamically import chalk
+	const inquirer = (await import("inquirer")).default; // Dynamically import inquirer
 
 	inquirer
 		.prompt([
