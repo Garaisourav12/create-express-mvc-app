@@ -14,7 +14,7 @@ const path = require("path");
 				type: "input",
 				name: "projectName",
 				message: "Enter project name:",
-				default: ".", // Default to current directory
+				default: "", // Default to current directory
 			},
 		])
 		.then(async (answers) => {
@@ -121,6 +121,7 @@ async function updatePackageFiles(projectDir, projectName) {
 				await fs.readFile(packageLockJsonPath, "utf8")
 			);
 			templatePackageLockJson.name = projectName;
+			templatePackageLockJson.packges[""].name = projectName;
 
 			await fs.writeFile(
 				packageLockJsonPath,
