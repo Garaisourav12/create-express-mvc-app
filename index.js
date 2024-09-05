@@ -1,6 +1,8 @@
+#!/usr/bin/env node
+
 const inquirer = require("inquirer");
 const fs = require("fs");
-const ncp = require("ncp");
+const ncp = require("ncp").ncp;
 const chalk = require("chalk");
 
 inquirer
@@ -16,39 +18,66 @@ inquirer
 		const projectName = answers.projectName;
 		const projectDir = projectName === "./" ? "." : projectName;
 
+		// Create the project directory if it doesn't exist
 		if (!fs.existsSync(projectDir)) {
 			fs.mkdirSync(projectDir);
 		}
 
+		// Copy the template files to the new project directory
 		ncp("create-express-app/.", projectDir, (err) => {
 			if (err) {
-				console.error(err);
+				console.error(
+					chalk.red(`Error while copying files: ${err.message}`)
+				);
+				process.exit(1);
 			} else {
 				console.log(
 					chalk.green(`Project created successfully in ${projectDir}`)
 				);
 
-				// Read the template package.json and package-lock.json files
-				const templatePackageJson = JSON.parse(
-					fs.readFileSync(`${projectDir}/package.json`, "utf8")
-				);
-				const templatePackageLockJson = JSON.parse(
-					fs.readFileSync(`${projectDir}/package-lock.json`, "utf8")
-				);
+				try {
+					// Read and modify the template package.json
+					const packageJsonPath = `${projectDir}/package.json`;
+					const packageLockJsonPath = `${projectDir}/package-lock.json`;
 
-				// Replace "create-express-app" with the project name
-				templatePackageJson.name = projectName;
-				templatePackageLockJson.name = projectName;
+					// Check if the files exist before reading
+					if (fs.existsSync(packageJsonPath)) {
+						const templatePackageJson = JSON.parse(
+							fs.readFileSync(packageJsonPath, "utf8")
+						);
+						templatePackageJson.name = projectName;
 
-				// Write the updated package.json and package-lock.json files to the project directory
-				fs.writeFileSync(
-					`${projectDir}/package.json`,
-					JSON.stringify(templatePackageJson, null, 2)
-				);
-				fs.writeFileSync(
-					`${projectDir}/package-lock.json`,
-					JSON.stringify(templatePackageLockJson, null, 2)
-				);
+						fs.writeFileSync(
+							packageJsonPath,
+							JSON.stringify(templatePackageJson, null, 2)
+						);
+					}
+
+					if (fs.existsSync(packageLockJsonPath)) {
+						const templatePackageLockJson = JSON.parse(
+							fs.readFileSync(packageLockJsonPath, "utf8")
+						);
+						templatePackageLockJson.name = projectName;
+
+						fs.writeFileSync(
+							packageLockJsonPath,
+							JSON.stringify(templatePackageLockJson, null, 2)
+						);
+					}
+
+					console.log(
+						chalk.green("Package files updated successfully.")
+					);
+				} catch (err) {
+					console.error(
+						chalk.red(
+							`Error while updating package files: ${err.message}`
+						)
+					);
+				}
 			}
 		});
+	})
+	.catch((err) => {
+		console.error(chalk.red(`Error during prompt: ${err.message}`));
 	});
