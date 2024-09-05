@@ -3,82 +3,72 @@
 const fs = require("fs").promises;
 const { existsSync } = require("fs");
 const path = require("path");
+const cls = require("cls"); // Use cls for color formatting
+const inquirer = require("inquirer");
 
-(async () => {
-	const chalk = (await import("chalk")).default; // Correctly import chalk
-	const inquirer = (await import("inquirer")).default; // Correctly import inquirer
+inquirer
+	.prompt([
+		{
+			type: "input",
+			name: "projectName",
+			message: "Enter project name:",
+			default: "", // Default to current directory
+		},
+	])
+	.then(async (answers) => {
+		let projectName = answers.projectName;
+		let projectDir = projectName;
 
-	inquirer
-		.prompt([
-			{
-				type: "input",
-				name: "projectName",
-				message: "Enter project name:",
-				default: "", // Default to current directory
-			},
-		])
-		.then(async (answers) => {
-			let projectName = answers.projectName;
-			let projectDir = projectName;
+		// If project name is empty
+		if (!projectName) {
+			throw new Error("Project name is required!");
+		}
+		// If project name is ".", use current directory name
+		if (projectName === ".") {
+			projectName = path.basename(process.cwd()); // Use current directory name
+			projectDir = "."; // Set to current directory
+		}
 
-			// If project name is empty
-			if (!projectName) {
-				throw new Error("Project name is required!");
+		// If project name is not provided, throw an error
+		if (!projectName) {
+			throw new Error("Project name is required!");
+		}
+
+		// Create the project directory if it doesn't exist
+		if (projectDir !== "." && !existsSync(projectDir)) {
+			await fs.mkdir(projectDir);
+		}
+
+		const sourceDir = path.join(__dirname, "create-express-app");
+
+		try {
+			await copyDirectory(sourceDir, projectDir);
+			console.log(
+				cls.green(`Project created successfully in ${projectDir}!`)
+			);
+
+			// Instructions
+			console.log(cls.green(`\nTo setup the project, run:`));
+			if (projectDir === ".") {
+				console.log(cls.green(`cd ${projectName}`));
 			}
-			// If project name is ".", use current directory name
-			if (projectName === ".") {
-				projectName = path.basename(process.cwd()); // Use current directory name
-				projectDir = "."; // Set to current directory
-			}
+			console.log(cls.green(`npm install`));
+			console.log(cls.green(`\nRun your application with:`));
+			console.log(cls.green(`npm start - for production`));
+			console.log(cls.green(`npm run dev - for development`));
 
-			// If project name is not provided, throw an error
-			if (!projectName) {
-				throw new Error("Project name is required!");
-			}
-
-			// Create the project directory if it doesn't exist
-			if (projectDir !== "." && !existsSync(projectDir)) {
-				await fs.mkdir(projectDir);
-			}
-
-			const sourceDir = path.join(__dirname, "create-express-app");
-
-			try {
-				await copyDirectory(sourceDir, projectDir);
-				console.log(
-					chalk.green(
-						`Project created successfully in ${projectDir}!`
-					)
-				);
-
-				// Instructions
-				console.log(chalk.green(`To setup the project, run:`));
-				if (projectDir === ".") {
-					console.log(chalk.green(`cd ${projectName}`));
-				}
-				console.log(chalk.green(`npm install`));
-				console.log(
-					chalk.green(
-						`CREATE .env file according to config/envConfig.js`
-					)
-				);
-				console.log(chalk.green(`\nRun your application with:`));
-				console.log(chalk.green(`npm start - for production`));
-				console.log(chalk.green(`npm run dev - for development`));
-
-				// Modify package.json and package-lock.json
-				await updatePackageFiles(projectDir, projectName);
-			} catch (err) {
-				console.error(
-					chalk.red(`Error while copying files: ${err.message}`)
-				);
-				process.exit(1);
-			}
-		})
-		.catch((err) => {
-			console.error(chalk.red(`Error during prompt: ${err.message}`));
-		});
-})();
+			// Modify package.json and package-lock.json
+			await updatePackageFiles(projectDir, projectName);
+			// Update .gitignore
+			await updateGitIgnore(projectDir);
+		} catch (err) {
+			console.error(cls.red(`Error while copying files: ${err.message}`));
+			process.exit(1);
+		}
+	})
+	.catch((err) => {
+		console.error(cls.red(`Error during prompt: ${err.message}`));
+	});
 
 // Function to copy directory recursively
 async function copyDirectory(source, destination) {
@@ -129,10 +119,36 @@ async function updatePackageFiles(projectDir, projectName) {
 			);
 		}
 
-		console.log(chalk.green("Package files updated successfully."));
+		console.log(cls.green("Package files updated successfully."));
 	} catch (err) {
 		console.error(
-			chalk.red(`Error while updating package files: ${err.message}`)
+			cls.red(`Error while updating package files: ${err.message}`)
+		);
+	}
+}
+
+// Update .gitignore
+async function updateGitIgnore(projectDir) {
+	const gitIgnorePath = path.join(projectDir, ".gitignore");
+
+	try {
+		if (existsSync(gitIgnorePath)) {
+			let gitIgnoreContent = await fs.readFile(gitIgnorePath, "utf8");
+
+			// Append .env to .gitignore if it's not already there
+			if (!gitIgnoreContent.includes(".env")) {
+				gitIgnoreContent += "\n.env";
+				await fs.writeFile(gitIgnorePath, gitIgnoreContent, "utf8");
+				console.log(cls.green(".gitignore updated successfully."));
+			}
+		} else {
+			// Create a new .gitignore file with .env if it doesn't exist
+			await fs.writeFile(gitIgnorePath, ".env", "utf8");
+			console.log(cls.green(".gitignore created and .env added."));
+		}
+	} catch (err) {
+		console.error(
+			cls.red(`Error while updating .gitignore: ${err.message}`)
 		);
 	}
 }

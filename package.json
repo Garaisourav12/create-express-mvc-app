@@ -12,7 +12,6 @@
   "author": "Sourav Garai",
   "license": "ISC",
   "dependencies": {
-    "chalk": "^5.3.0",
     "inquirer": "^10.2.0",
     "ncp": "^2.0.0"
   }
