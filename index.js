@@ -64,14 +64,12 @@ const cls = require("cli-color"); // Use cls for color formatting
 				// Update .gitignore
 				await updateGitIgnore(projectDir);
 			} catch (err) {
-				console.error(
-					cls.red(`Error while copying files: ${err.message}`)
-				);
+				console.error(cls.red(err.message));
 				process.exit(1);
 			}
 		})
 		.catch((err) => {
-			console.error(cls.red(`Error during prompt: ${err.message}`));
+			console.error(cls.red(err.message));
 		});
 })();
 
@@ -126,9 +124,7 @@ async function updatePackageFiles(projectDir, projectName) {
 
 		console.log(cls.green("Package files updated successfully."));
 	} catch (err) {
-		console.error(
-			cls.red(`Error while updating package files: ${err.message}`)
-		);
+		console.error(cls.red(err.message));
 	}
 }
 
@@ -137,23 +133,9 @@ async function updateGitIgnore(projectDir) {
 	const gitIgnorePath = path.join(projectDir, ".gitignore");
 
 	try {
-		if (existsSync(gitIgnorePath)) {
-			let gitIgnoreContent = await fs.readFile(gitIgnorePath, "utf8");
-
-			// Append .env to .gitignore if it's not already there
-			if (!gitIgnoreContent.includes(".env")) {
-				gitIgnoreContent += "\n.env";
-				await fs.writeFile(gitIgnorePath, gitIgnoreContent, "utf8");
-				console.log(cls.green(".gitignore updated successfully."));
-			}
-		} else {
-			// Create a new .gitignore file with .env if it doesn't exist
-			await fs.writeFile(gitIgnorePath, ".env", "utf8");
-			console.log(cls.green(".gitignore created and .env added."));
-		}
+		// File must exist so dont need to check if it exists just append .env in next line
+		await fs.appendFile(gitIgnorePath, "\n.env");
 	} catch (err) {
-		console.error(
-			cls.red(`Error while updating .gitignore: ${err.message}`)
-		);
+		console.error(cls.red(err.message));
 	}
 }
