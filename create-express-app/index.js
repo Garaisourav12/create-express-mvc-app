@@ -23,7 +23,7 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 
 // Db Connection
-// connectDB();
+connectDB();
 
 // Entry Point
 app.get("/", (req, res) => {
