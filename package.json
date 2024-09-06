@@ -1,6 +1,6 @@
 {
   "name": "create-express-mvc-app",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "Custom Express app generator",
   "main": "index.js",
   "bin": {
