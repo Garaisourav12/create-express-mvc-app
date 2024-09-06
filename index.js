@@ -45,19 +45,25 @@ const cls = require("cli-color"); // Use cls for color formatting
 
 			try {
 				await copyDirectory(sourceDir, projectDir);
-				console.log(
-					cls.green(`Project created successfully in ${projectDir}!`)
-				);
+				console.log(cls.green(`Project created successfully...!`));
 
 				// Instructions
 				console.log(cls.green(`\nTo setup the project, run:`));
 				if (projectDir === ".") {
 					console.log(cls.green(`cd ${projectName}`));
 				}
-				console.log(cls.green(`npm install`));
+				console.log(
+					cls.green(`
+					npm install
+				`)
+				);
 				console.log(cls.green(`\nRun your application with:`));
-				console.log(cls.green(`npm start - for production`));
-				console.log(cls.green(`npm run dev - for development`));
+				console.log(
+					cls.green(`
+					npm start - for production
+					npm run dev - for development
+				`)
+				);
 
 				// Modify package.json and package-lock.json
 				await updatePackageFiles(projectDir, projectName);
@@ -121,8 +127,6 @@ async function updatePackageFiles(projectDir, projectName) {
 				JSON.stringify(templatePackageLockJson, null, 2)
 			);
 		}
-
-		console.log(cls.green("Package files updated successfully."));
 	} catch (err) {
 		console.error(cls.red(err.message));
 	}
@@ -134,7 +138,10 @@ async function updateGitIgnore(projectDir) {
 
 	try {
 		// File must exist so dont need to check if it exists just append .env in next line
-		await fs.appendFile(gitIgnorePath, "\n.env");
+		await fs.appendFile(
+			gitIgnorePath,
+			"// Dependencies\nnode_modules\n// Environment variables\n.env"
+		);
 	} catch (err) {
 		console.error(cls.red(err.message));
 	}
