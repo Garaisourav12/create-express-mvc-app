@@ -32,11 +32,6 @@ const cls = require("cli-color"); // Use cls for color formatting
 				projectDir = "."; // Set to current directory
 			}
 
-			// If project name is not provided, throw an error
-			if (!projectName) {
-				throw new Error("Project name is required!");
-			}
-
 			// Create the project directory if it doesn't exist
 			if (projectDir !== "." && !existsSync(projectDir)) {
 				await fs.mkdir(projectDir);
@@ -46,10 +41,10 @@ const cls = require("cli-color"); // Use cls for color formatting
 
 			try {
 				// Start the process
-				console.log(cls.green(`Creating project...`));
+				console.log(cls.blue(`Creating project...`));
 
 				// Copy files
-				console.log(cls.green(`Copying files...`));
+				console.log(cls.blue(`\nCopying files...`));
 				await copyDirectory(sourceDir, projectDir);
 				console.log(cls.green(`All files copied successfully...!`));
 
@@ -156,7 +151,7 @@ const cls = require("cli-color"); // Use cls for color formatting
 	 */
 	async function installDependencies(projectDir) {
 		try {
-			console.log(cls.green(`Installing dependencies...`));
+			console.log(cls.blue(`\nInstalling dependencies...`));
 			await execa("npm", ["install"], { cwd: projectDir });
 			console.log(cls.green(`Dependencies installlation complete...!`));
 		} catch (err) {
@@ -165,7 +160,7 @@ const cls = require("cli-color"); // Use cls for color formatting
 	}
 	async function setupGit(projectDir) {
 		try {
-			console.log(cls.green(`Setting up git...`));
+			console.log(cls.blue(`\nSetting up git...`));
 			await execa("git", ["init"], { cwd: projectDir });
 			await execa("git", ["add", "."], { cwd: projectDir });
 			await execa("git", ["commit", "-m", "Express app template"], {
@@ -181,12 +176,12 @@ const cls = require("cli-color"); // Use cls for color formatting
 	function printInstructions(projectDir) {
 		console.log(cls.green(`\nProject created successfully...!`));
 		// Instructions
-		console.log(cls.green(`\n\nTo run your application:\n`));
+		console.log(cls.blue(`\nTo run your application:\n`));
 		if (projectDir != ".") {
-			console.log(cls.green(`cd ${projectDir}`));
+			console.log(cls.yellowBright(`cd ${projectDir}`));
 		}
-		console.log(cls.green(`npm start - for production`));
-		console.log(cls.green(`npm run dev - for development`));
+		console.log(cls.yellowBright(`npm start - for production`));
+		console.log(cls.yellowBright(`npm run dev - for development`));
 
 		console.log(cls.green(`\nSuccess...!`));
 	}
