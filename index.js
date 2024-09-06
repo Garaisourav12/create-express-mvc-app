@@ -7,7 +7,7 @@ const cls = require("cli-color"); // Use cls for color formatting
 
 (async () => {
 	const inquirer = (await import("inquirer")).default;
-	const execa = await import("execa");
+	const execa = (await import("execa")).default.default;
 
 	inquirer
 		.prompt([
@@ -187,5 +187,7 @@ const cls = require("cli-color"); // Use cls for color formatting
 		}
 		console.log(cls.green(`npm start - for production`));
 		console.log(cls.green(`npm run dev - for development`));
+
+		console.log(cls.green(`\nSuccess...!`));
 	}
 })();
