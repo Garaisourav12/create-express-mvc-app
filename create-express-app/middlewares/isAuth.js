@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { UnauthorizedError } = require("../errors");
+const { getErrorResponse } = require("../utils/commonUtils");
 
 const isAuth = (req, res, next) => {
 	const token = req.cookies.token;
@@ -19,10 +20,8 @@ const isAuth = (req, res, next) => {
 
 		next();
 	} catch (error) {
-		return res.status(error?.statusCode || 500).json({
-			success: false,
-			error: error.message,
-			statusCode: error?.statusCode || 500,
-		});
+		return res
+			.status(error?.statusCode || 500)
+			.json(getErrorResponse(error));
 	}
 };

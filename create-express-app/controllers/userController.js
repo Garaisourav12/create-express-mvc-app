@@ -1,4 +1,5 @@
 const { createUser } = require("../services/user");
+const { getErrorResponse } = require("../utils/commonUtils");
 
 const registerUser = async (req, res) => {
 	const { username, email, password } = req.body;
@@ -12,11 +13,9 @@ const registerUser = async (req, res) => {
 			statusCode: 201,
 		});
 	} catch (error) {
-		return res.status(error?.statusCode || 500).json({
-			success: false,
-			error: error.message,
-			statusCode: error?.statusCode || 500,
-		});
+		return res
+			.status(error?.statusCode || 500)
+			.json(getErrorResponse(error));
 	}
 };
 
