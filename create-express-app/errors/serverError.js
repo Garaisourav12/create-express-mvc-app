@@ -1,4 +1,4 @@
-const HttpError = require("./HttpError");
+const HttpError = require("./httpError");
 
 // Internal Server Error
 class InternalServerError extends HttpError {

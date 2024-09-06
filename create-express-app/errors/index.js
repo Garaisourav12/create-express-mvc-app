@@ -1,6 +1,6 @@
-const HttpError = require("./HttpError");
-const ClientError = require("./4XX");
-const ServerError = require("./5XX");
+const HttpError = require("./httpError");
+const ClientError = require("./clientError");
+const ServerError = require("./serverError");
 
 module.exports = {
 	HttpError,
