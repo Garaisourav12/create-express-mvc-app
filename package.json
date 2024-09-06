@@ -18,5 +18,21 @@
   "files": [
     "index.js",
     "create-express-app/"
+  ],
+  "keywords": [
+    "express",
+    "express-generator",
+    "express-app",
+    "mvc",
+    "express-mvc",
+    "nodejs",
+    "npm",
+    "express-boilerplate",
+    "create-express-mvc-app",
+    "create-express-app-mvc",
+    "node",
+    "mvc-boilerplate",
+    "nodejs-boilerplate",
+    "create-express-app"
   ]
 }
