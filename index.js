@@ -7,7 +7,7 @@ const cls = require("cli-color"); // Use cls for color formatting
 
 (async () => {
 	const inquirer = (await import("inquirer")).default;
-	const execa = (await import("execa")).default;
+	const execa = await import("execa");
 
 	inquirer
 		.prompt([
@@ -185,7 +185,7 @@ const cls = require("cli-color"); // Use cls for color formatting
 		if (projectDir === ".") {
 			console.log(
 				cls.green(`
-					cd ${projectName}
+					cd ${projectDir}
 				`)
 			);
 		}
