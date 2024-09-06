@@ -1,4 +1,4 @@
-const { createUser } = require("../views/user");
+const { createUser } = require("../services/user");
 
 const registerUser = async (req, res) => {
 	const { username, email, password } = req.body;

@@ -138,10 +138,8 @@ async function updateGitIgnore(projectDir) {
 
 	try {
 		// File must exist so dont need to check if it exists just append .env in next line
-		await fs.appendFile(
-			gitIgnorePath,
-			"// Dependencies\nnode_modules\n// Environment variables\n.env"
-		);
+		const gitIgnoreContent = `# Dependencies\nnode_modules\n\n# Environment variables\n.env`;
+		await fs.appendFile(gitIgnorePath, gitIgnoreContent);
 	} catch (err) {
 		console.error(cls.red(err.message));
 	}
