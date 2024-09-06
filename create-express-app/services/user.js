@@ -33,7 +33,7 @@ const createUser = async ({ username, email, password }) => {
 
 		return newUser;
 	} catch (error) {
-		throw new InternalServerError(error.message);
+		throw new InternalServerError("Internal Server Error!");
 	}
 };
 
