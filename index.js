@@ -44,31 +44,24 @@ const cls = require("cli-color"); // Use cls for color formatting
 			const sourceDir = path.join(__dirname, "create-express-app");
 
 			try {
-				await copyDirectory(sourceDir, projectDir);
-				console.log(cls.green(`Project created successfully...!`));
+				// Start the process
+				console.log(cls.green(`Creating project...`));
 
-				// Instructions
-				console.log(cls.green(`\nTo setup the project, run:`));
-				if (projectDir === ".") {
-					console.log(cls.green(`cd ${projectName}`));
-				}
-				console.log(
-					cls.green(`
-					npm install
-				`)
-				);
-				console.log(cls.green(`\nRun your application with:`));
-				console.log(
-					cls.green(`
-					npm start - for production
-					npm run dev - for development
-				`)
-				);
+				// Copy files
+				console.log(cls.green(`Copying files...`));
+				await copyDirectory(sourceDir, projectDir);
+				console.log(cls.green(`All files copied successfully...!`));
 
 				// Modify package.json and package-lock.json
 				await updatePackageFiles(projectDir, projectName);
 				// Update .gitignore
 				await updateGitIgnore(projectDir);
+				// Install dependencies
+				await installDependencies(projectDir);
+				// Setup git
+				await setupGit(projectDir);
+				// Log success message
+				printInstructions(projectDir);
 			} catch (err) {
 				console.error(cls.red(err.message));
 				process.exit(1);
@@ -143,4 +136,60 @@ async function updateGitIgnore(projectDir) {
 	} catch (err) {
 		console.error(cls.red(err.message));
 	}
+}
+
+/*
+ * First go to project directory
+ * npm install
+ * Wait for Installation to complete
+ * Log Dependencies installed
+ * git init
+ * Wait for git init to complete
+ * git add .
+ * Wait for git add to complete
+ * git commit -m "Express app template"
+ * Wait for git commit to complete
+ * Log git setup complete
+ */
+async function installDependencies(projectDir) {
+	try {
+		console.log(cls.green(`Installing dependencies...`));
+		await execa("npm", ["install"], { cwd: projectDir });
+		console.log(cls.green(`Dependencies installlation complete...!`));
+	} catch (err) {
+		console.error(cls.red(err.message));
+	}
+}
+async function setupGit(projectDir) {
+	try {
+		console.log(cls.green(`Setting up git...`));
+		await execa("git", ["init"], { cwd: projectDir });
+		await execa("git", ["add", "."], { cwd: projectDir });
+		await execa("git", ["commit", "-m", "Express app template"], {
+			cwd: projectDir,
+		});
+		console.log(cls.green(`Git setup complete...!`));
+	} catch (err) {
+		console.error(cls.red(err.message));
+	}
+}
+
+// Instructions
+function printInstructions(projectDir) {
+	console.log(cls.green(`\nProject created successfully...!`));
+	// Instructions
+	console.log(cls.green(`\n\nTo run your application:`));
+	if (projectDir === ".") {
+		console.log(
+			cls.green(`
+			cd ${projectName}
+		`)
+		);
+	}
+	console.log(
+		cls.green(`
+		npm start - for production
+		npm run dev - for development
+	`)
+	);
 }
