@@ -181,19 +181,11 @@ const cls = require("cli-color"); // Use cls for color formatting
 	function printInstructions(projectDir) {
 		console.log(cls.green(`\nProject created successfully...!`));
 		// Instructions
-		console.log(cls.green(`\n\nTo run your application:`));
-		if (projectDir === ".") {
-			console.log(
-				cls.green(`
-					cd ${projectDir}
-				`)
-			);
+		console.log(cls.green(`\n\nTo run your application:\n`));
+		if (projectDir !== ".") {
+			console.log(cls.green(`cd ${projectDir}`));
 		}
-		console.log(
-			cls.green(`
-				npm start - for production
-				npm run dev - for development
-			`)
-		);
+		console.log(cls.green(`npm start - for production`));
+		console.log(cls.green(`npm run dev - for development`));
 	}
 })();
