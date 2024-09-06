@@ -2,6 +2,7 @@
 
 const fs = require("fs").promises;
 const { existsSync } = require("fs");
+const execa = require("execa");
 const path = require("path");
 const cls = require("cli-color"); // Use cls for color formatting
 
