@@ -7,7 +7,7 @@ const cls = require("cli-color"); // Use cls for color formatting
 
 (async () => {
 	const inquirer = (await import("inquirer")).default;
-	const execa = (await import("execa")).default.default;
+	const { execa } = await import("execa");
 
 	inquirer
 		.prompt([
