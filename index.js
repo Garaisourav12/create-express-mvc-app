@@ -180,8 +180,16 @@ const cls = require("cli-color"); // Use cls for color formatting
 		if (projectDir != ".") {
 			console.log(cls.yellowBright(`cd ${projectDir}`));
 		}
-		console.log(cls.yellowBright(`npm start - for production`));
-		console.log(cls.yellowBright(`npm run dev - for development`));
+		console.log(
+			`${cls.yellowBright(`npm start`)} ${cls.white(`-`)} ${cls.blue(
+				`for production`
+			)}`
+		);
+		console.log(
+			`${cls.yellowBright(`npm run dev`)} ${cls.white(`-`)} ${cls.blue(
+				`for development`
+			)}`
+		);
 
 		console.log(cls.green(`\nSuccess...!`));
 	}
