@@ -163,7 +163,7 @@ const cls = require("cli-color");
 	function printInstructions(projectDir) {
 		console.log(cls.green(`\nProject created successfully...!`));
 		// Instructions
-		console.log(cls.blue(`\nTo run your application:\n`));
+		console.log(cls.blue(`\nTo start your application run:`));
 		if (projectDir != ".") {
 			console.log(cls.yellowBright(`cd ${projectDir}`));
 		}
