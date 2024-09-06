@@ -12,10 +12,10 @@ const registerUser = async (req, res) => {
 			statusCode: 201,
 		});
 	} catch (error) {
-		res.status(error.statusCode).json({
+		return res.status(error?.statusCode || 500).json({
 			success: false,
 			error: error.message,
-			statusCode: error.statusCode,
+			statusCode: error?.statusCode || 500,
 		});
 	}
 };

@@ -19,10 +19,10 @@ const isAuth = (req, res, next) => {
 
 		next();
 	} catch (error) {
-		return res.status(error.statusCode).json({
+		return res.status(error?.statusCode || 500).json({
 			success: false,
 			error: error.message,
-			statusCode: error.statusCode,
+			statusCode: error?.statusCode || 500,
 		});
 	}
 };
