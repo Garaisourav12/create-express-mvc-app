@@ -15,7 +15,8 @@ const cls = require("cli-color");
 
 	// If project name is empty
 	if (!projectName) {
-		throw new Error("Project name is required!");
+		console.log(cls.red("Project name is required!"));
+		process.exit(1);
 	}
 	// If project name is ".", use current directory name
 	if (projectName === ".") {
