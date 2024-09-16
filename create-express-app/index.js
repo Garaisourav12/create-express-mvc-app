@@ -3,8 +3,8 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
 // File Imports
-const { PORT } = require("./config/envConfig");
-const connectDB = require("./config/db");
+const { PORT } = require("./envConfig");
+const connectDB = require("./db");
 const routes = require("./routes");
 const { NotFoundError } = require("./errors");
 
